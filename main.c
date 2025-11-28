@@ -1,14 +1,10 @@
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-//enum status
-enum Status
-{
-    Disponivel = 0 ,
-    Indisponivel = 1
-};
+
 // struct como nao temos uma biblioteca para trabalhar com datas criei uma struct
 struct Data
 {
@@ -25,7 +21,7 @@ struct Book
     char Editora[80];
     int AnoPublicacao;
     int QuantidadeDisponivel;
-    enum Status StatusEmprestimo;
+    int StatusEmprestimo;
 };
 // um tipo Usuario para facilitar o cadastro de usuario
 struct User
@@ -61,6 +57,7 @@ void MenuPrincipal(void){
     int totalLivros = 0;
     int opcao;
     do {
+        printf("%d", totalLivros);
         system("clear");
         printf("|-------------------- Biblioteca --------------------|\n");
         printf("\n");
@@ -85,7 +82,6 @@ void MenuPrincipal(void){
             case 4:
             default:
                 system("clear");
-                printf("Opcao Invalida");
                 break;
         };
     }while (opcao != 4);
@@ -93,93 +89,202 @@ void MenuPrincipal(void){
 };
 
 // Iniciando Funcoes do sub-menu Livros.
-void CadastraLivro(struct Book books[], int *totalLivros);
-void GetFirstBook(struct Book books[], int *totalLivros);
-void GetAllBooks(struct Book books[], int *totalLivros);
+void CadastraLivro(struct Book books[],  int *totalLivros);
+void PesquisarLivros(struct Book books[], int *totalLivros);
+void RelatorioLivros(struct Book books[], int *totalLivros);
 // Funcoes MenuLivro
 void MenuLivro(struct Book books[], int *totalLivros)
 {
     int opcao;
-    system("clear");
-    printf("|--------------------- Livros --------------------|\n");
-    printf("\n");
-    printf("|1 - Cadastra Livro\n");
-    printf("|2 - Consultar Livro\n");
-    printf("|3 - Relatorio de Livros\n");
-    printf("|4 - Sair/Voltar\n");
-    printf("Escolha uma opcao: ");
-    scanf("%d", &opcao);
+        system("clear");
+        printf("\n|--------------------- Livros --------------------|\n\n");
+        printf("|1 - Cadastra Livro\n");
+        printf("|2 - Consultar Livro\n");
+        printf("|3 - Relatorio de Livros\n");
+        printf("|4 - Sair/Voltar\n\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
 
+        switch (opcao)
+        {
+            case 1:
+                CadastraLivro(books, totalLivros);
+                break;
+            case 2:
+                PesquisarLivros(books, totalLivros);
+                break;
+            case 3:
+                RelatorioLivros(books, totalLivros);
+                break;
+            case 4:
+            default:
+                break;
+        }
+
+
+}
+//funcao para verificar Entrada do tipo string
+bool VerificaString(const char *mensagem, char *destino, size_t tamanho)
+{
+    printf("%s", mensagem);
+    if (fgets(destino, tamanho, stdin) == NULL)
+    {
+        printf("Erro na leitura\n");
+        return false;
+
+    }
+
+    destino[strcspn(destino,"\n")] = '\0';
+
+    if (strlen(destino) == 0)
+    {
+        printf("Entrada Invalida: string vazia\n");
+        return false;
+    }
+
+    return true;
+}
+bool VerificaInteiro(const char *mensagem, int *valor)
+{
+
+    char texto[50];
+    char *endptr;
+
+    printf("%s", mensagem);
+    if (fgets(texto, sizeof(texto), stdin) == NULL)
+        return false;
+    texto[strcspn(texto, "\n")] = '\0';
+    *valor = strtol(texto, &endptr,10);
+    if (strlen(texto) == 0)
+    {
+        printf("Entrada Invalida: string vazia\n");
+        return false;
+    }
+    if (*endptr != '\0')
+    {
+        printf("Entrada Invalida:só numeros!\n");
+        return false;
+    }
+    return true;
+}
+void CadastraLivro(struct Book books[],  int *totalLivros)
+{
+    int quantidade = 0;
+    int status;
+    system("clear");
+    printf("\n|--------------------- Cadastro de Livros --------------------|\n");
+    printf("Quantos livros deseja cadastra: ");
+    scanf("%d", &quantidade);
+    getchar();
+    for (int i = 0; i < quantidade; i++) {
+
+        printf("%d", *totalLivros);
+        books[*totalLivros].Codigo = *totalLivros;
+        printf("\n|--------------------- Codigo do Livro: %d --------------------|\n", books[*totalLivros].Codigo);
+        while(!VerificaString("\nDigite o Titulo do Livro:" , books[*totalLivros].Titulo,sizeof(books[*totalLivros].Titulo)));
+        while(!VerificaString("Nome do Autor: ", books[*totalLivros].Autor, sizeof(books[*totalLivros].Autor)));
+        while(!VerificaString("Qual Editora: ", books[*totalLivros].Editora, sizeof(books[*totalLivros].Editora)));
+        while(!VerificaInteiro("Ano de Publicacão: ", &books[*totalLivros].AnoPublicacao));
+        while(!VerificaInteiro("Quantas unidades: ", &books[*totalLivros].QuantidadeDisponivel));
+        while(!VerificaInteiro("Digite 0(Disponivel) e 1 (Emprestado): ", &books[*totalLivros].StatusEmprestimo));
+
+        printf("Livro Cadastrado com Sucesso!!\n");
+
+        printf("Titulo: %s\n", books[*totalLivros].Titulo);
+        printf("Autor: %s\n", books[*totalLivros].Autor);
+        printf("Editora: %s\n", books[*totalLivros].Editora);
+        printf("Ano de Publicacao: %d\n", books[*totalLivros].AnoPublicacao);
+        printf("Unidades em Estoque: %d\n", books[*totalLivros].QuantidadeDisponivel);
+        printf("Status: %d\n", books[*totalLivros].StatusEmprestimo);
+        printf("\n|-----------------------------------------|\n");
+        (*totalLivros)++;
+
+    }
+
+
+}
+void strToLower(char *str) {
+    for (int i = 0; str[i]; i++) {
+        str[i] = tolower((unsigned char)str[i]);
+    }
+}
+void PesquisarLivros(struct Book books[], int *totalLivros)
+{
+    int CodigoAtual = 0;
+    int indice = 0;
+    int opcao = 0;
+    char buscaTexto[80];
+    printf("\n");
+    printf("|--------------------- Consultar Livro --------------------|\n");
+    printf("Como voce desejar Pesquisar: ");
+    printf("1 - Codigo do livro \n");
+    printf("2 - Titulo do Livro \n");
+    printf("3 - Nome do Autor \n");
+    printf("4 - Sair\n");
+    printf("Escolha um tipo de pesquisa: ");
+    scanf("%d", &opcao);
+    getchar();
     switch (opcao)
     {
         case 1:
-            CadastraLivro(books, totalLivros);
+            while (!VerificaInteiro("Digite o Codigo do livro: ", &CodigoAtual))
+            for (int i = 0; i <= *totalLivros -1; i++) {
+                if (CodigoAtual == books[i].Codigo) {
+
+                }
+                else
+                {
+                    indice = -1;
+                    printf("Codigo Nao Encontrado! ");
+                }
+            }
             break;
         case 2:
-            GetFirstBook(books, totalLivros);
+            while (!VerificaString("Digito o Titulo do livro: ", buscaTexto, sizeof(buscaTexto)));
+            strToLower(buscaTexto);
+                for (int i = 0; i < *totalLivros; i++) {
+                    strToLower(books[i].Titulo);
+                    if (strcmp(buscaTexto, books[i].Titulo) == 0)
+                    {
+                        indice = i;
+                    }
+                    else
+                    {
+                        indice = -1;
+
+                    }
+                }
             break;
         case 3:
-            GetAllBooks(books, totalLivros);
+            while (!VerificaString("Digito o Autor do livro: ", buscaTexto, sizeof(buscaTexto)));
+            strToLower(buscaTexto);
+            for (int i = 0; i < *totalLivros ; i++) {
+                strToLower(books[i].Autor);
+                if (strcmp(buscaTexto, books[i].Autor) == 0)
+                {
+                    indice = i;
+                }
+                else
+                {
+                    indice = -1;
+
+                }
+            }
             break;
-        case 4:
         default:
-            return;
             break;
+
     }
-}
-void CadastraLivro(struct Book books[], int *totalLivros)
-{
-    int quantidade;
-    int status;
-    system("clear");
-    printf("|--------------------- Cadastro de Livros --------------------|\n");
-    printf("\n");
-    printf("Quantos livros deseja cadastra: ");
-    scanf("%d", &quantidade);
-
-    for (int i = 0; i <= quantidade - 1; i++)
+    if ( *totalLivros > 0)
     {
-        books[*totalLivros].Codigo = *totalLivros;
-        printf("Codigo do Livro: %d", *totalLivros);
-        printf("\nDigite o Titulo do Livro: ");
-        scanf("%s", books[*totalLivros].Titulo);
-        printf("Digite o Autor: ");
-        scanf("%s", books[*totalLivros].Autor);
-        printf("Digite a Editora: ");
-        scanf("%s", books[*totalLivros].Editora);
-        printf("Digite o Ano de Publicação: ");
-        scanf("%d", &books[*totalLivros].AnoPublicacao);
-        printf("Digite Quantidade Disponivel: ");
-        scanf("%d", &books[*totalLivros].QuantidadeDisponivel);
-        printf("Digite 0(disponivel) ou 1(indisponivel): ");
-        scanf("%d", &status);
-        books[*totalLivros].StatusEmprestimo = status;
-
-
-
-
-}
-void GetFirstBook(struct Book books[], int *totalLivros)
-{
-    int currentCodigo = 0;
-    printf("\n");
-    system("clear");
-    printf("|--------------------- Consultar Livro --------------------|\n");
-    printf("Qual o Codigo do livro que deseja procurar: ");
-    scanf("%d", &currentCodigo);
-
-    if (currentCodigo <= *totalLivros)
-    {
-        printf("\n");
-        printf("Codigo do Livro: %d\n", books[currentCodigo].Codigo);
-        printf("Titulo: %s\n", books[currentCodigo].Titulo);
-        printf("Autor: %s\n", books[currentCodigo].Autor);
-        printf("Editora: %s\n", books[currentCodigo].Editora);
-        printf("Ano de Publicação: %d\n", books[currentCodigo].AnoPublicacao);
-        printf("Unidades: %d\n", books[currentCodigo].QuantidadeDisponivel);
-        printf("Disponibilidade: %p\n", &books[currentCodigo].StatusEmprestimo);
-        system("clear");
-        printf("|------------------------------------------------------|\n");
+        printf("\nLivro Encontrado ----------------|\n");
+        printf("Titulo: %s\n", books[indice].Titulo);
+        printf("Autor: %s\n", books[indice].Autor);
+        printf("Editora: %s\n", books[indice].Editora);
+        printf("Ano de Publicacao: %d\n", books[indice].AnoPublicacao);
+        printf("Unidades em Estoque: %d\n", books[indice].QuantidadeDisponivel);
+        printf("Status: %d\n", books[indice].StatusEmprestimo);
+        printf("\n|--------------------------------|\n");
     }
     else
     {
@@ -187,13 +292,14 @@ void GetFirstBook(struct Book books[], int *totalLivros)
     }
 
 }
-void GetAllBooks(struct Book books[], int *totalLivros)
+void RelatorioLivros(struct Book books[], int *totalLivros)
 {
     system("clear");
     printf("|--------------------- Relatorio de Livros --------------------|\n");
-    if (*totalLivros != 0)
+    printf("%d", *totalLivros);
+    if (*totalLivros >= 0)
     {
-        for (int i =0; i <= *totalLivros -1; i++) {
+        for (int i = 0; i < *totalLivros; i++) {
             printf("Codigo do livro:  %d\n", books[i].Codigo);
             printf("Titulo do Livro:  %s\n", books[i].Titulo);
             printf("Autor do Livro: %s\n", books[i].Autor);
