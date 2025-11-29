@@ -13,7 +13,7 @@ struct Data
     int ano;
 };
 // um tipo livro para facilitar o cadastro de livros
-struct Book
+struct Livro
 {
     int Codigo;
     char Titulo[100];
@@ -24,7 +24,7 @@ struct Book
     int StatusEmprestimo;
 };
 // um tipo Usuario para facilitar o cadastro de usuario
-struct User
+struct Usuario
 {
     int  Matricula;
     char Nome[100];
@@ -33,7 +33,7 @@ struct User
     struct Data DataCadastro;
 };
 //Struct do tipo emprestimo para facilitar o emprestimo de um livro
-struct  Loan
+struct  Emprestimo
 {
     int Codigo;
     int MatriculaUser;
@@ -43,87 +43,11 @@ struct  Loan
     bool Status;
 };
 
-
-
-// Iniciando Funcoes dos sub-menus
-void MenuLivro(struct Book books[], int *totalLivros);
-void MenuUsuario(void);
-void MenuEmprestimo(void);
-// Funcao Menu principal
-void MenuPrincipal(void){
-    struct Book books[100];
-    struct User users[100];
-    struct Loan Loan[100];
-    int totalLivros = 0;
-    int opcao;
-    do {
-        printf("%d", totalLivros);
-        system("clear");
-        printf("|-------------------- Biblioteca --------------------|\n");
-        printf("\n");
-        printf("|1 - Livro\n");
-        printf("|2 - Usuarios\n");
-        printf("|3 - Emprestimo\n");
-        printf("|4 - Sair\n");
-        printf("\n");
-        printf("Escolha uma opção: ");
-        scanf("%d", &opcao);
-
-        switch (opcao) {
-            case 1:
-                MenuLivro(books, &totalLivros);
-                break;
-            case 2:
-                MenuUsuario();
-                break;
-            case 3:
-                MenuEmprestimo();
-                break;
-            case 4:
-            default:
-                system("clear");
-                break;
-        };
-    }while (opcao != 4);
-
-};
-
-// Iniciando Funcoes do sub-menu Livros.
-void CadastraLivro(struct Book books[],  int *totalLivros);
-void PesquisarLivros(struct Book books[], int *totalLivros);
-void RelatorioLivros(struct Book books[], int *totalLivros);
-// Funcoes MenuLivro
-void MenuLivro(struct Book books[], int *totalLivros)
-{
-    int opcao;
-        system("clear");
-        printf("\n|--------------------- Livros --------------------|\n\n");
-        printf("|1 - Cadastra Livro\n");
-        printf("|2 - Consultar Livro\n");
-        printf("|3 - Relatorio de Livros\n");
-        printf("|4 - Sair/Voltar\n\n");
-        printf("Escolha uma opcao: ");
-        scanf("%d", &opcao);
-
-        switch (opcao)
-        {
-            case 1:
-                CadastraLivro(books, totalLivros);
-                break;
-            case 2:
-                PesquisarLivros(books, totalLivros);
-                break;
-            case 3:
-                RelatorioLivros(books, totalLivros);
-                break;
-            case 4:
-            default:
-                break;
-        }
-
-
+void strToLower(char *str) {
+    for (int i = 0; str[i]; i++) {
+        str[i] = tolower((unsigned char)str[i]);
+    }
 }
-//funcao para verificar Entrada do tipo string
 bool VerificaString(const char *mensagem, char *destino, size_t tamanho)
 {
     printf("%s", mensagem);
@@ -167,11 +91,95 @@ bool VerificaInteiro(const char *mensagem, int *valor)
     }
     return true;
 }
-void CadastraLivro(struct Book books[],  int *totalLivros)
+
+// Iniciando Funcoes dos sub-menus
+void MenuLivro(struct Livro books[], int *totalLivros);
+void MenuUsuario(struct Usuario users[], int *totalUsers);
+void MenuEmprestimo(struct Emprestimo emprestimos[], int *totalEmprestimos);
+// Funcao Menu principal
+void MenuPrincipal(void){
+    struct Livro books[100];
+    struct Usuario users[100];
+    struct Emprestimo emprestimos [100];
+    int totalLivros = 0;
+    int totalUsers = 0;
+    int totalEmprestimos = 0;
+    int opcao;
+
+    do {
+
+        printf("|-------------------- Biblioteca -------------------|\n");
+        printf("\n");
+        printf("|1 - Livro\n");
+        printf("|2 - Usuarios\n");
+        printf("|3 - Emprestimo\n");
+        printf("|4 - Sair\n");
+        printf("\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+
+                MenuLivro(books, &totalLivros);
+                break;
+            case 2:
+                MenuUsuario(users, &totalUsers);
+                break;
+            case 3:
+                MenuEmprestimo(emprestimos, &totalEmprestimos);
+                break;
+            case 4:
+            default:
+
+                break;
+        };
+    }while (opcao != 4);
+
+};
+
+// Iniciando Funcoes do sub-menu Livros.
+void CadastraLivro(struct Livro books[],  int *totalLivros);
+void PesquisarLivros(struct Livro books[], int *totalLivros);
+void RelatorioLivros(struct Livro books[], int *totalLivros);
+// Funcoes MenuLivro
+void MenuLivro(struct Livro books[], int *totalLivros)
+{
+    int opcao;
+    do {
+        printf("\n|--------------------- Livros --------------------|\n\n");
+        printf("|1 - Cadastra Livro\n");
+        printf("|2 - Consultar Livro\n");
+        printf("|3 - Relatorio de Livros\n");
+        printf("|4 - Sair/Voltar\n\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao)
+        {
+            case 1:
+                CadastraLivro(books, totalLivros);
+                break;
+            case 2:
+                PesquisarLivros(books, totalLivros);
+                break;
+            case 3:
+                RelatorioLivros(books, totalLivros);
+                break;
+            case 4:
+            default:
+
+                break;
+        }
+    }while (opcao != 4);
+
+}
+//funcao para verificar Entrada do tipo string
+void CadastraLivro(struct Livro books[],  int *totalLivros)
 {
     int quantidade = 0;
     int status;
-    system("clear");
+
     printf("\n|--------------------- Cadastro de Livros --------------------|\n");
     printf("Quantos livros deseja cadastra: ");
     scanf("%d", &quantidade);
@@ -203,12 +211,7 @@ void CadastraLivro(struct Book books[],  int *totalLivros)
 
 
 }
-void strToLower(char *str) {
-    for (int i = 0; str[i]; i++) {
-        str[i] = tolower((unsigned char)str[i]);
-    }
-}
-void PesquisarLivros(struct Book books[], int *totalLivros)
+void PesquisarLivros(struct Livro books[], int *totalLivros)
 {
     int CodigoAtual = 0;
     int indice = 0;
@@ -292,9 +295,9 @@ void PesquisarLivros(struct Book books[], int *totalLivros)
     }
 
 }
-void RelatorioLivros(struct Book books[], int *totalLivros)
+void RelatorioLivros(struct Livro books[], int *totalLivros)
 {
-    system("clear");
+
     printf("|--------------------- Relatorio de Livros --------------------|\n");
     printf("%d", *totalLivros);
     if (*totalLivros >= 0)
@@ -316,39 +319,167 @@ void RelatorioLivros(struct Book books[], int *totalLivros)
 
 }
 
+//Iniciando Funcoes Usuario
+void CadastraUser(struct Usuario users[],  int *totalUsers);
+void PesquisarUser(struct Usuario users[], int *totalUsers);
+void RelatorioUser(struct Usuario users[], int *totalUsers);
 //Menu Usuario
-void MenuUsuario()
+void MenuUsuario(struct Usuario users[], int *totalUsers)
 {
     int opcao;
-    system("clear");
-    printf("|--------------------- Livros --------------------|\n");
-    printf("\n");
-    printf("|1 - Cadastra Usuario\n");
-    printf("|2 - Consultar Usuario\n");
-    printf("|3 - Relatorio de Usuario\n");
-    printf("|4 - Sair/Voltar\n");
-    printf("Escolha uma opcao: ");
-    scanf("%d", &opcao);
+    do{
+        printf("|--------------------- Usuarios ----------------------|\n");
+        printf("\n");
+        printf("|1 - Cadastra Usuario\n");
+        printf("|2 - Consultar Usuario\n");
+        printf("|3 - Relatorio de Usuario\n");
+        printf("|4 - Sair/Voltar\n\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
 
+        switch (opcao)
+        {
+            case 1:
+                CadastraUser(users, totalUsers);
+                break;
+            case 2:
+                PesquisarUser(users, totalUsers);
+                break;
+            case 3:
+                RelatorioUser(users, totalUsers);
+                break;
+            case 4:
+            default:
+                MenuPrincipal();
+                break;
+        }
+    }while (opcao != 4);
+}
+
+void CadastraUser(struct Usuario users[],  int *totalUsers)
+{
+    int quantidade = 0;
+    int status;
+    printf("\n|--------------------- Cadastro de Usuarios --------------------|\n");
+    printf("Quantos Usuarios deseja cadastrar? ");
+    scanf("%d", &quantidade);
+    getchar();
+    for (int i = 0; i < quantidade; i++) {
+
+        printf("%d", *totalUsers);
+        users[*totalUsers].Matricula = *totalUsers;
+        printf("\n|--------------------- Usuario : %d --------------------|\n", users[*totalUsers].Matricula);
+        while(!VerificaString("\nDigite o Nome do Usuario:" , users[*totalUsers].Nome,sizeof(users[*totalUsers].Nome)));
+        while(!VerificaString("Qual o Curso: ", users[*totalUsers].Curso, sizeof(users[*totalUsers].Curso)));
+        while(!VerificaString("Qual  o Telefone(55999999999): ", users[*totalUsers].Telefone, sizeof(users[*totalUsers].Telefone)));
+        while(!VerificaInteiro("Dia Do Cadastro: ", &users[*totalUsers].DataCadastro.dia));
+        while(!VerificaInteiro("Mes Do Cadastro: ", &users[*totalUsers].DataCadastro.mes));
+        while(!VerificaInteiro("Ano Do Cadastro: ", &users[*totalUsers].DataCadastro.ano));
+
+        printf("Usuario Cadastrado com Sucesso!!\n");
+
+        printf("Nome: %s\n", users[*totalUsers].Nome);
+        printf("Curso: %s\n", users[*totalUsers].Curso);
+        printf("Telefone: %s\n", users[*totalUsers].Telefone);
+        printf("Data de Cadastro: %d/%d/%d\n", users[*totalUsers].DataCadastro.dia, users[*totalUsers].DataCadastro.mes,users[*totalUsers].DataCadastro.ano);
+
+        printf("\n|-----------------------------------------|\n");
+        (*totalUsers)++;
+
+    }
+
+
+}
+void PesquisarUser(struct Usuario users[], int *totalUsers)
+{
+    int MatriculaAtual = 0;
+    int indice = 0;
+    int opcao = 0;
+    char buscaTexto[80];
+    printf("\n");
+    printf("|--------------------- Consultar Usuario --------------------|\n\n");
+    printf("1 - Matricula do Usuario \n");
+    printf("2 - Nome do Usuario \n");
+    printf("3 - Sair\n\n");
+    printf("Escolha um tipo de pesquisa: ");
+    scanf("%d", &opcao);
+    getchar();
     switch (opcao)
     {
         case 1:
+            while (!VerificaInteiro("Digite a Matricula do Usuario: ", &MatriculaAtual))
+            for (int i = 0; i <= *totalUsers ; i++) {
+                if (MatriculaAtual == users[i].Matricula) {
+
+                }
+                else
+                {
+                    indice = -1;
+                }
+            }
             break;
         case 2:
+            while (!VerificaString("Digite o Nome do Usuario: ", buscaTexto, sizeof(buscaTexto)));
+            strToLower(buscaTexto);
+                for (int i = 0; i < *totalUsers; i++) {
+                    strToLower(users[i].Nome);
+                    if (strcmp(buscaTexto, users[i].Nome) == 0)
+                    {
+                        indice = i;
+                    }
+                    else
+                    {
+                        indice = -1;
+
+                    }
+                }
             break;
-        case 3:
-            break;
-        case 4:
         default:
-            MenuPrincipal();
             break;
+
     }
+    if ( *totalUsers >= 0 && opcao != 3 && indice != -1)
+    {
+        printf("\n|---------------- Usuario Encontrado ----------------|\n\n");
+        printf("Matricula: %d\n", users[indice].Matricula);
+        printf("Nome: %s\n", users[indice].Nome);
+        printf("Curso: %s\n", users[indice].Curso);
+        printf("Telefone: %s\n", users[indice].Telefone);
+        printf("Data de Cadastro: %d/%d/%d\n", users[indice].DataCadastro.dia,users[indice].DataCadastro.mes, users[indice].DataCadastro.ano);
+        printf("\n|----------------------------------------------------|\n");
+    }
+    else
+    {
+        printf("Usuario nao encontrado!!! \n");
+    }
+
 }
-//Menu Usuario
-void MenuEmprestimo()
+void RelatorioUser(struct Usuario users[], int *totalUsers)
+{
+
+    printf("|--------------------- Relatorio de Usuarios --------------------|\n");
+    if (*totalUsers >= 0)
+    {
+        for (int i = 0; i < *totalUsers; i++) {
+            printf("Matricula:  %d\n", users[i].Matricula);
+            printf("Nome:  %s\n", users[i].Nome);
+            printf("Curso: %s\n", users[i].Curso);
+            printf("Telefone: %s\n", users[i].Telefone);
+            printf("Data de Cadastro: %d/%d/%d\n", users[i].DataCadastro.dia, users[i].DataCadastro.mes, users[i].DataCadastro.ano);
+            printf("|--------------------------------------------------------|\n");
+        }
+    }else
+    {
+        printf("Nao temos livros Cadastrados ainda.\n");
+    }
+
+}
+
+
+void MenuEmprestimo(struct Emprestimo emprestimos[], int *totalEmprestimos)
 {
     int opcao;
-    system("clear");
+
     printf("|--------------------- Emprestimo --------------------|\n");
     printf("\n");
     printf("|1 - Cadastra Emprestimo\n");
