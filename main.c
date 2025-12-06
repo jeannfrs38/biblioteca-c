@@ -42,6 +42,7 @@ struct  Emprestimo
     struct Data DataDevolucao;
     int Status;
 };
+const char caminho[11] = "./data";
 
 void strToLower(char *str) {
     for (int i = 0; str[i]; i++) {
@@ -93,6 +94,19 @@ bool VerificaInteiro(const char *mensagem, int *valor)
     return true;
 }
 
+// Livros
+void SalvarLivros(const char *filename, struct Livro livros);
+void CarregarDadosLivros(const char *filename, struct Livro livros[], int *totalLivros);
+
+//Users
+void SalvarUsers(const char *caminho, struct Usuario users);
+void CarregarDadosUsers(const char *filename, struct Usuario users[], int *totalUsers);
+
+// Emprestimos
+void SalvarEmprestimos(const char *caminho, struct Usuario users);
+void CarregarDadosEmprestimos(const char *filename, struct Emprestimo emprestimos[], int *totalEmprestimos);
+
+
 // Iniciando Funcoes dos sub-menus
 void MenuLivro(struct Livro books[], int *totalLivros);
 void MenuUsuario(struct Usuario users[], int *totalUsers);
@@ -106,7 +120,8 @@ void MenuPrincipal(void){
     int totalUsers = 0;
     int totalEmprestimos = 0;
     int opcao;
-
+    CarregarDadosLivros("livros.txt", livros, &totalLivros);
+    CarregarDadosUsers("usuarios.txt", users, &totalUsers);
     do {
 
         printf("|-------------------- Biblioteca -------------------|\n");
@@ -208,7 +223,9 @@ void CadastrarLivro(struct Livro livros[],  int *totalLivros)
         printf("Unidades em Estoque: %d\n", livros[*totalLivros].QuantidadeDisponivel);
         printf("Status: %s\n", VerificaStatus(livros[*totalLivros].StatusEmprestimo, "Disponivel", "Emprestado"));
         printf("\n|-----------------------------------------|\n");
+        SalvarLivros("livros.txt", livros[*totalLivros]);
         (*totalLivros)++;
+
 
     }
 
@@ -397,6 +414,7 @@ void CadastrarUser(struct Usuario users[], int *totalUsers)
         printf("Data de Cadastro: %d/%d/%d\n", users[*totalUsers].DataCadastro.dia, users[*totalUsers].DataCadastro.mes,users[*totalUsers].DataCadastro.ano);
 
         printf("\n|-----------------------------------------|\n");
+        SalvarUsers("usuarios.txt", users[*totalUsers]);
         (*totalUsers)++;
 
     }
@@ -799,6 +817,109 @@ bool VerificaInteiroEmprestimo(const char *mensagem, int *valor, int *totalEmpre
     return true;
 }
 
-int main(void) {
+//Funcoes Salvar em Arquivo
+void SalvarLivros(const char *filename, struct Livro livros)
+{
+    FILE* arquivo = fopen( filename,"a");;
+
+
+
+    if (arquivo == NULL) {
+        printf("Erro ao abrir arquivo");
+        return;
+    }
+
+
+        fprintf(arquivo, "%d;%s;%s;%s;%d;%d;%d", livros.Codigo, livros.Titulo, livros.Autor, livros.Editora, livros.AnoPublicacao, livros.QuantidadeDisponivel, livros.StatusEmprestimo);
+        fclose(arquivo);
+        printf("Arquivo salvo com sucesso");
+
+}
+void CarregarDadosLivros(const char *filename, struct Livro livros[], int *totalLivros)
+{
+        FILE *arquivo = fopen(filename, "r");
+        if (arquivo == NULL) {
+            printf("Arquivo nao criado\n");
+            printf("Salva informacoes para criar o arquivo\n");
+            return;
+        }
+        while (fscanf(arquivo, " %d;%101[^;];%101[^;];%101[^;];%d;%d;%d", &livros[*totalLivros].Codigo, livros[*totalLivros].Titulo, livros[*totalLivros].Autor,
+livros[*totalLivros].Editora, &livros[*totalLivros].AnoPublicacao, &livros[*totalLivros].QuantidadeDisponivel, &livros[*totalLivros].StatusEmprestimo) == 7) {
+            (*totalLivros)++;
+        }
+
+    printf("total Arquivos carregados %d\n", *totalLivros);
+
+}
+void SalvarUsers(const char *filename, struct Usuario user)
+{
+    FILE* arquivo = fopen( filename,"a");;
+
+
+
+    if (arquivo == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+
+    fprintf(arquivo, "%d;%s;%s;%s;%d;%d;%d", user.Matricula, user.Nome, user.Curso, user.Telefone, user.DataCadastro.dia, user.DataCadastro.mes, user.DataCadastro.ano);
+    fclose(arquivo);
+    printf("Arquivo salvo com sucesso\n");
+
+}
+void CarregarDadosUsers(const char *filename, struct Usuario users[], int *totalUsers)
+{
+    FILE *arquivo = fopen(filename, "r");
+    if (arquivo == NULL) {
+        printf("Arquivo nao criado");
+        printf("Salva informacoes para criar o arquivo");
+        return;
+    }
+    while (fscanf(arquivo, " %d;%101[^;];%101[^;];%101[^;];%d;%d;%d", &users[*totalUsers].Matricula, users[*totalUsers].Nome, users[*totalUsers].Curso,
+users[*totalUsers].Telefone, &users[*totalUsers].DataCadastro.dia, &users[*totalUsers].DataCadastro.mes, &users[*totalUsers].DataCadastro.ano) == 7) {
+        (*totalUsers)++;
+}
+
+    printf("total Arquivos carregados %d\n", *totalUsers);
+
+}
+void SalvarEmprestimos(const char *filename, struct Emprestimo emprestimos)
+{
+    FILE* arquivo = fopen( filename,"a");;
+
+
+
+    if (arquivo == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+
+    fprintf(arquivo, "%d;%d;%d;%d;%d;%d;%d;%d;%d", emprestimos.Codigo, emprestimos.MatriculaUser, emprestimos.CodigoLivro, emprestimos.DataEmprestimo.dia,
+        emprestimos.DataEmprestimo.mes, emprestimos.DataEmprestimo.ano, emprestimos.DataDevolucao.dia, emprestimos.DataDevolucao.mes, emprestimos.DataDevolucao.ano);
+    fclose(arquivo);
+    printf("Arquivo salvo com sucesso\n");
+
+}
+void CarregarDadosEmprestimos(const char *filename, struct Emprestimo emprestimos[], int *totalEmprestimos)
+{
+    FILE *arquivo = fopen(filename, "r");
+    if (arquivo == NULL) {
+        printf("Arquivo nao criado\n");
+        printf("Salva informacoes para criar o arquivo\n");
+        return;
+    }
+    while (fscanf(arquivo, " %d;%d;%d;%d;%d;%d;%d;%d;%d", &emprestimos[*totalEmprestimos].Codigo, &emprestimos[*totalEmprestimos].MatriculaUser,
+        &emprestimos[*totalEmprestimos].CodigoLivro, &emprestimos[*totalEmprestimos].DataEmprestimo.dia, &emprestimos[*totalEmprestimos].DataEmprestimo.mes,
+        &emprestimos[*totalEmprestimos].DataEmprestimo.ano, &emprestimos[*totalEmprestimos].DataDevolucao.dia, &emprestimos[*totalEmprestimos].DataDevolucao.mes, &emprestimos[*totalEmprestimos].DataDevolucao.ano) == 7) {
+        (*totalEmprestimos)++;
+}
+
+    printf("total Arquivos carregados %d\n", *totalEmprestimos);
+
+}
+int main(void)
+{
     MenuPrincipal();
 }
