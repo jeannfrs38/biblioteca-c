@@ -42,7 +42,6 @@ struct  Emprestimo
     struct Data DataDevolucao;
     int Status;
 };
-const char caminho[11] = "./data";
 
 void strToLower(char *str) {
     for (int i = 0; str[i]; i++) {
@@ -103,7 +102,7 @@ void SalvarUsers(const char *caminho, struct Usuario users);
 void CarregarDadosUsers(const char *filename, struct Usuario users[], int *totalUsers);
 
 // Emprestimos
-void SalvarEmprestimos(const char *caminho, struct Usuario users);
+void SalvarEmprestimos(const char *caminho, struct Emprestimo emprestimos);
 void CarregarDadosEmprestimos(const char *filename, struct Emprestimo emprestimos[], int *totalEmprestimos);
 
 
@@ -113,6 +112,7 @@ void MenuUsuario(struct Usuario users[], int *totalUsers);
 void MenuEmprestimo(struct Emprestimo emprestimos[],  struct Usuario users[], struct Livro livros[], int *totalEmprestimos, int *totalUsers, int *totalLivros);
 // Funcao Menu principal
 void MenuPrincipal(void){
+
     struct Livro livros[100];
     struct Usuario users[100];
     struct Emprestimo emprestimos [100];
@@ -122,6 +122,8 @@ void MenuPrincipal(void){
     int opcao;
     CarregarDadosLivros("livros.txt", livros, &totalLivros);
     CarregarDadosUsers("usuarios.txt", users, &totalUsers);
+    CarregarDadosEmprestimos("emprestimos.txt", emprestimos, &totalEmprestimos);
+
     do {
 
         printf("|-------------------- Biblioteca -------------------|\n");
@@ -239,7 +241,7 @@ void PesquisarLivros(struct Livro livros[], int *totalLivros)
     char buscaTexto[80];
     printf("\n");
     printf("|--------------------- Consultar Livro --------------------|\n");
-    printf("Como voce desejar Pesquisar:\n ");
+    printf("Como voce desejar Pesquisar:\n");
     printf("1 - Codigo do livro \n");
     printf("2 - Titulo do Livro \n");
     printf("3 - Nome do Autor \n");
@@ -250,31 +252,34 @@ void PesquisarLivros(struct Livro livros[], int *totalLivros)
     switch (opcao)
     {
         case 1:
-            while (!VerificaInteiro("Digite o Codigo do livro: ", &CodigoAtual))
-            for (int i = 0; i <= *totalLivros -1; i++) {
-                if (CodigoAtual == livros[i].Codigo) {
+            printf("Digite o Codigo do Livro: ");
+            scanf("%d", &CodigoAtual);
 
-                }
-                else
+            for (int i = 0; i <= *totalLivros - 1 ; i++)
+            {
+                if (CodigoAtual == livros[i].Codigo)
                 {
-                    indice = -1;
-                    printf("Codigo Nao Encontrado! ");
+                    indice = i;
+                    break;
                 }
+                else {
+                    indice = -1;
+                }
+
             }
             break;
         case 2:
             while (!VerificaString("Digito o Titulo do livro: ", buscaTexto, sizeof(buscaTexto)));
             strToLower(buscaTexto);
-                for (int i = 0; i < *totalLivros; i++) {
+                for (int i = 0; i <= *totalLivros -1; i++) {
                     strToLower(livros[i].Titulo);
                     if (strcmp(buscaTexto, livros[i].Titulo) == 0)
                     {
                         indice = i;
+                        break;
                     }
-                    else
-                    {
+                    else {
                         indice = -1;
-
                     }
                 }
             break;
@@ -286,11 +291,10 @@ void PesquisarLivros(struct Livro livros[], int *totalLivros)
                 if (strcmp(buscaTexto, livros[i].Autor) == 0)
                 {
                     indice = i;
+                    break;
                 }
-                else
-                {
+                else {
                     indice = -1;
-
                 }
             }
             break;
@@ -298,9 +302,10 @@ void PesquisarLivros(struct Livro livros[], int *totalLivros)
             break;
 
     }
-    if ( *totalLivros > 0)
-    {
+    if (indice != -1) {
+
         printf("\nLivro Encontrado ----------------|\n");
+        printf("Codigo: %d\n", livros[indice].Codigo);
         printf("Titulo: %s\n", livros[indice].Titulo);
         printf("Autor: %s\n", livros[indice].Autor);
         printf("Editora: %s\n", livros[indice].Editora);
@@ -308,11 +313,12 @@ void PesquisarLivros(struct Livro livros[], int *totalLivros)
         printf("Unidades em Estoque: %d\n", livros[indice].QuantidadeDisponivel);
         printf("Status: %s\n", VerificaStatus(livros[indice].StatusEmprestimo, "Disponivel","Emprestado"));
         printf("\n|--------------------------------|\n");
+
+    }else {
+        printf("Livro Nao Encontrado");
     }
-    else
-    {
-        printf("Livro Nao encontrado!!! \n");
-    }
+
+
 
 }
 void RelatorioLivros(struct Livro livros[], int *totalLivros)
@@ -322,13 +328,13 @@ void RelatorioLivros(struct Livro livros[], int *totalLivros)
     printf("%d", *totalLivros);
     if (*totalLivros >= 0)
     {
-        for (int i = 0; i < *totalLivros; i++) {
-            printf("Codigo do livro:  %d\n", livros[i].Codigo);
-            printf("Titulo do Livro:  %s\n", livros[i].Titulo);
-            printf("Autor do Livro: %s\n", livros[i].Autor);
-            printf("A Editora: %s\n", livros[i].Editora);
-            printf("Ano de Publicação: %d\n", livros[i].AnoPublicacao);
-            printf("Unidades: %d\n", livros[i].QuantidadeDisponivel);
+        for (int i = 0; i < *totalLivros -1; i++) {
+            printf("Codigo do livro:%d\n", livros[i].Codigo);
+            printf("Titulo do Livro:%s\n", livros[i].Titulo);
+            printf("Autor do Livro:%s\n", livros[i].Autor);
+            printf("A Editora:%s\n", livros[i].Editora);
+            printf("Ano de Publicação:%d\n", livros[i].AnoPublicacao);
+            printf("Unidades:%d\n", livros[i].QuantidadeDisponivel);
             printf("Status para Emprestimo: %s\n", VerificaStatus(livros[i].StatusEmprestimo, "Disponivel", "Emprestado"));
             printf("|-----------------------------------------------------|\n");
         }
@@ -579,6 +585,7 @@ void CadastrarEmprestimo(struct Emprestimo emprestimos[],  struct Usuario users[
         printf("Data da Devolucao: %d/%d/%d", emprestimos[*totalEmprestimos].DataDevolucao.dia, emprestimos[*totalEmprestimos].DataDevolucao.mes, emprestimos[*totalEmprestimos].DataDevolucao.ano);
         printf("Status: %s\n", VerificaStatus(emprestimos[*totalEmprestimos].Status, "Ativo", "Devolvido"));
         printf("\n|-----------------------------------------|\n");
+        SalvarEmprestimos("emprestimos.txt", emprestimos[*totalEmprestimos]);
         (*totalEmprestimos)++;
 
     }
@@ -589,7 +596,7 @@ void RelatorioEmprestimoAtivo(struct Emprestimo emprestimos[], int *totalEmprest
 {
 
     printf("|--------------------- Relatorio de Emprestimos Ativos --------------------|\n");
-    if (*totalEmprestimos >= 0)
+    if (*totalEmprestimos > 0)
     {
         for (int i = 0; i < *totalEmprestimos; i++) {
             if (emprestimos[i].Status == 0) {
@@ -614,9 +621,9 @@ void DevolucaoEmprestimo(struct Emprestimo emprestimos[], int *totalEmprestimos,
     int CodigoAtual, diff, indiceLivro = 0;
     struct Data data;
     char opcao[10];
-
+    getchar();
     printf("|--------------------- Devolucao Emprestimo --------------------|\n");
-    printf("Qual a data de Hoje: ");
+    printf("Qual a data de Hoje:\n");
     while (!VerificaInteiro("Dia: ", &data.dia));
     while (!VerificaInteiro("Mes: ", &data.mes));
     while (!VerificaInteiro("Ano: ", &data.ano));
@@ -660,7 +667,7 @@ void DevolucaoEmprestimo(struct Emprestimo emprestimos[], int *totalEmprestimos,
         livros[indiceLivro].StatusEmprestimo = 0;
     }
 
-
+    SalvarEmprestimos("emprestimos.txt", emprestimos[CodigoAtual]);
 }
 
 int DiasNoMes(int mes, int ano) {
@@ -721,14 +728,16 @@ bool VerificaInteiroUser(const char *mensagem, int *valor, int *totalUsers, stru
         printf("Entrada Invalida:só numeros!\n");
         return false;
     }
-    for (int i = 0; i < *totalUsers; i++)
+    for (int i = 0; i <= *totalUsers -1; i++)
     {
-        if(*valor != users[i].Matricula)
+        if(*valor == users[i].Matricula)
         {
-            indice = -1;
+            indice = i;
+            break;
+            return true;
         }
         else {
-            indice = i;
+            indice = -1;
         }
 
     }
@@ -759,16 +768,24 @@ bool VerificaInteiroLivro(const char *mensagem, int *valor, int *totalLivros, st
         printf("Entrada Invalida:só numeros!\n");
         return false;
     }
-    for (int i = 0; i < *totalLivros; i++)
+    for (int i = 0; i <= *totalLivros - 1; i++)
     {
-        if(*valor != livros[i].Codigo)
+        if(*valor == livros[i].Codigo)
+        {
+            indice = i;
+            livros[i].StatusEmprestimo = 1;
+            if (livros[i].QuantidadeDisponivel > 0) {
+                livros[i].QuantidadeDisponivel -= 1;
+            }
+            else {
+                printf("Nao tem unidades!!");
+                return false;
+            }
+            break;
+        }
+        else
         {
             indice = -1;
-        }
-        else {
-            livros[i].StatusEmprestimo = 1;
-            livros[i].QuantidadeDisponivel -= 1;
-            indice = i;
         }
 
     }
@@ -848,7 +865,7 @@ livros[*totalLivros].Editora, &livros[*totalLivros].AnoPublicacao, &livros[*tota
             (*totalLivros)++;
         }
 
-    printf("total Arquivos carregados %d\n", *totalLivros);
+    printf("total de Livros carregados %d\n", *totalLivros);
 
 }
 void SalvarUsers(const char *filename, struct Usuario user)
@@ -881,7 +898,7 @@ users[*totalUsers].Telefone, &users[*totalUsers].DataCadastro.dia, &users[*total
         (*totalUsers)++;
 }
 
-    printf("total Arquivos carregados %d\n", *totalUsers);
+    printf("Total de Usuarios carregados %d\n", *totalUsers);
 
 }
 void SalvarEmprestimos(const char *filename, struct Emprestimo emprestimos)
@@ -912,13 +929,14 @@ void CarregarDadosEmprestimos(const char *filename, struct Emprestimo emprestimo
     }
     while (fscanf(arquivo, " %d;%d;%d;%d;%d;%d;%d;%d;%d", &emprestimos[*totalEmprestimos].Codigo, &emprestimos[*totalEmprestimos].MatriculaUser,
         &emprestimos[*totalEmprestimos].CodigoLivro, &emprestimos[*totalEmprestimos].DataEmprestimo.dia, &emprestimos[*totalEmprestimos].DataEmprestimo.mes,
-        &emprestimos[*totalEmprestimos].DataEmprestimo.ano, &emprestimos[*totalEmprestimos].DataDevolucao.dia, &emprestimos[*totalEmprestimos].DataDevolucao.mes, &emprestimos[*totalEmprestimos].DataDevolucao.ano) == 7) {
+        &emprestimos[*totalEmprestimos].DataEmprestimo.ano, &emprestimos[*totalEmprestimos].DataDevolucao.dia, &emprestimos[*totalEmprestimos].DataDevolucao.mes, &emprestimos[*totalEmprestimos].DataDevolucao.ano) == 9) {
         (*totalEmprestimos)++;
 }
 
-    printf("total Arquivos carregados %d\n", *totalEmprestimos);
+    printf("Total de Emprestimos  carregados %d\n", *totalEmprestimos);
 
 }
+
 int main(void)
 {
     MenuPrincipal();
